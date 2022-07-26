@@ -1,16 +1,27 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 
-import PokemonTable from 'views/pokemon-table';
+import PokemonTableView from 'views/pokemon-table/PokemonTableView';
+import { PokemonTableContextProvider } from 'views/pokemon-table/pokemonsTableContext';
 
 const App = () => {
   return (
     <div className="App">
-      <h1>HKKKKKKKK HHH</h1>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<PokemonTable />} />
-        </Routes>
-      </BrowserRouter>
+      <Box p={4}>
+        <Typography variant="h3">Pokedex</Typography>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <PokemonTableContextProvider>
+                  <PokemonTableView />
+                </PokemonTableContextProvider>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </Box>
     </div>
   );
 };
