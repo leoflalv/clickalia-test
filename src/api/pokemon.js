@@ -9,4 +9,13 @@ const getPokemons = async () => {
   }
 };
 
-export { getPokemons };
+const getPokemon = async (name) => {
+  try {
+    const pokemon = await client.get(`pokemon/${name}`);
+    return { success: true, ...pokemon };
+  } catch (_) {
+    return { success: false, error: 'Something went wrong.' };
+  }
+};
+
+export { getPokemon, getPokemons };

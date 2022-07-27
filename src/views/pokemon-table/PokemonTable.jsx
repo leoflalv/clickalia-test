@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,8 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-
-import { usePokemonTableContext } from './pokemonsTableContext';
 
 const headCells = [
   {
@@ -39,11 +38,7 @@ const EnhancedTableHead = () => {
   );
 };
 
-const PokemonTable = () => {
-  const { currentPokemons: rows } = usePokemonTableContext();
-
-  const handleClick = (event, name) => {};
-
+const PokemonTable = ({ rows }) => {
   // Avoid a layout jump when reaching the last page with empty rows.
 
   return (
@@ -57,15 +52,11 @@ const PokemonTable = () => {
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.name)}
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.name}
-                  >
+                  <TableRow hover tabIndex={-1} key={row.name}>
                     <TableCell component="th" id={labelId} scope="row" padding="normal">
-                      {row.name}
+                      <Link key={row.name} to={`pokemon/${row.name}`}>
+                        {row.name}
+                      </Link>
                     </TableCell>
                     <TableCell align="left">{row.url}</TableCell>
                   </TableRow>

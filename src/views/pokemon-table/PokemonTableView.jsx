@@ -1,13 +1,16 @@
-import { useEffect } from 'react';
-import { Box, CircularProgress, TextField } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+import debounce from 'lodash/debounce';
+import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import { getPokemons } from 'api/pokemon';
 
 import PokemonTable from './PokemonTable';
-import { usePokemonTableContext } from './pokemonsTableContext';
 
 const PokemonTableView = () => {
-  const { isLoading, setIsLoading, setCurrentPokemons, query, setQuery, allPokemons, setAllPokemons } =
-    usePokemonTableContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+  const [allPokemons, setAllPokemons] = useState();
+  const [currentPokemons, setCurrentPokemons] = useState([]);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     requestPokemons();
@@ -21,8 +24,11 @@ const PokemonTableView = () => {
     setIsLoading(true);
     const pokemons = await getPokemons();
     if (pokemons.success) {
-      setAllPokemons(pokemons.data.results);
-      setCurrentPokemons(pokemons.data.results);
+      const sortedPokemonos = pokemons.data.results.sort((a, b) => a.name.localeCompare(b.name));
+      setAllPokemons(sortedPokemonos);
+      setCurrentPokemons(sortedPokemonos);
+    } else {
+      setError(pokemons.error);
     }
     setIsLoading(false);
   };
@@ -33,13 +39,20 @@ const PokemonTableView = () => {
     );
   };
 
+  const debouncedFilter = useCallback(
+    debounce((query) => setQuery(query), 500),
+    []
+  );
+
   const handleQueryChange = (e) => {
-    setQuery(e.target.value);
+    debouncedFilter(e.target.value);
   };
 
   return (
     <Box mt={8}>
-      <TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={handleQueryChange} />
+      <TextField id="filter" label="Filtro" variant="outlined" onChange={handleQueryChange} />
+      {error && <Typography color="red">{error}</Typography>}
+
       {isLoading
         ? (
         <Box textAlign="center">
@@ -47,7 +60,7 @@ const PokemonTableView = () => {
         </Box>
           )
         : (
-        <PokemonTable />
+        <PokemonTable rows={currentPokemons} />
           )}
     </Box>
   );
